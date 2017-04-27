@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:component-scan base-package="com.zhuzz.study.mvc.web.controller"/>
+    <!-- HandlerMapping -->
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"/>
+    <!-- HandlerAdapter -->
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+    <!-- viewResolver -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/page/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!-- 处理器 -->
+    <bean name="/hello" class="com.zhuzz.study.mvc.web.controller.HelloWorldController"/>
+    <bean name="/success" class="com.zhuzz.study.mvc.web.controller.SuccessController"/>
+    <bean name="/cancel" class="com.zhuzz.study.mvc.web.controller.CancelController"/>
+    <bean name="/hello2" class="com.zhuzz.study.mvc.web.controller.HelloWorld2Controller">
+        <property name="cacheSeconds" value="5"/>
+    </bean>
+    <bean name="/forwardToServlet" class="org.springframework.web.servlet.mvc.ServletForwardingController">
+        <property name="servletName" value="forwarding"/>
+    </bean>
+    <bean name="/abstractCommand" class="com.zhuzz.study.mvc.web.controller.MyAbstractCommandController">
+        <property name="commandClass" value="com.zhuzz.study.mvc.web.model.UserModel"/>
+    </bean>
+    <bean name="/simpleForm" class="com.zhuzz.study.mvc.web.controller.RegisterSimpleFormController">
+        <property name="commandClass" value="com.zhuzz.study.mvc.web.model.UserModel"/>
+        <property name="commandName" value="user"/>
+        <property name="formView" value="register"/>
+        <property name="successView" value="redirect:/success"/>
+        <property name="cancelView" value="redirect:/cancel"/>
+    </bean>
+    <bean name="/infoFillWizard" class="com.zhuzz.study.mvc.web.controller.InfoFillWizardFormController">
+        <property name="commandClass" value="com.zhuzz.study.mvc.web.model.UserModel"/>
+        <property name="commandName" value="user"/>
+        <property name="pages">
+            <list>
+                <value>wizard/baseInfo</value>
+                <value>wizard/schoolInfo</value>
+                <value>wizard/workInfo</value>
+            </list>
+        </property>
+    </bean>
+    <bean name="/parameterizableView" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+        <property name="viewName" value="success"/>
+    </bean>
+    <bean name="/user/**" class="com.zhuzz.study.mvc.web.controller.UserActionController">
+        <property name="createView" value="user/create"/>
+        <property name="updateView" value="user/update"/>
+        <property name="deleteView" value="user/delete"/>
+        <property name="listView" value="user/list"/>
+        <property name="redirectToListView" value="redirect:/user/list"/>
+        <!-- 使用PropertiesMethodNameResolver来解析功能处理方法名 -->
+        <!--property name="methodNameResolver" ref="propertiesMethodNameResolver"/-->
+    </bean>
+
+
+    <!--委托对象-->
+    <bean id="userDelegate" class="com.zhuzz.study.mvc.web.controller.UserDelegate">
+        <property name="createView" value="userDelegate/create"/>
+        <property name="updateView" value="userDelegate/update"/>
+        <property name="deleteView" value="userDelegate/delete"/>
+        <property name="listView" value="userDelegate/list"/>
+        <property name="redirectToListView" value="redirect:/userDelegate/list"/>
+    </bean>
+    <!--控制器对象-->
+    <bean name="/userDelegate/**"
+          class="org.springframework.web.servlet.mvc.multiaction.MultiActionController">
+        <property name="delegate" ref="userDelegate"/>
+        <property name="methodNameResolver" ref="parameterMethodNameResolver"/>
+    </bean>
+    <!--ParameterMethodNameResolver -->
+    <bean id="parameterMethodNameResolver"
+          class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+        <!-- 1、根据请求参数名解析功能方法名 -->
+        <property name="methodParamNames" value="create,update,delete"/>
+        <!-- 2、根据请求参数名的值解析功能方法名 -->
+        <property name="paramName" value="action"/>
+        <!-- 3、逻辑方法名到真实方法名的映射 -->
+        <property name="logicalMappings">
+            <props>
+                <prop key="doList">list</prop>
+            </props>
+        </property>
+        <!--4、默认执行的功能处理方法 -->
+        <property name="defaultMethodName" value="list"/>
+    </bean>
+</beans>
