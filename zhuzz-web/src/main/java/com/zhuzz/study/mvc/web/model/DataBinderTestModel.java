@@ -9,6 +9,8 @@ import java.util.*;
  */
 public class DataBinderTestModel {
     private String username;
+
+    private String password;
     private boolean bool;//Boolean值测试
     private SchoolInfoModel schooInfo;
     private List hobbyList;//集合测试，此处可以改为数组/Set进行测试
@@ -16,6 +18,14 @@ public class DataBinderTestModel {
     private PhoneNumberModel phoneNumber;//String->自定义对象的转换测试
     private Date date;//日期类型测试
     private UserStateEnum state;//String——>Enum类型转换测试
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getUsername() {
         return username;

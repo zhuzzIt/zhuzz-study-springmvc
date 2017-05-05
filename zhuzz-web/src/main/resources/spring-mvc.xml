@@ -94,9 +94,11 @@
     </bean>
 
     <bean name="/dataBind" class="com.zhuzz.study.mvc.web.controller.DataBinderTestController"/>
+    <bean name="userModelValidator" class="com.zhuzz.study.mvc.web.support.validator.UserModelValidator"/>
     <bean name="/dataBindError" class="com.zhuzz.study.mvc.web.controller.DataBinderErrorTestController">
         <property name="formView" value="bindAndValidate/input"/>
         <property name="successView" value="bindAndValidate/success"/>
+        <property name="validator" ref="userModelValidator"/>
     </bean>
     <bean id="messageSource"
           class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
